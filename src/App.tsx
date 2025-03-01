@@ -3,15 +3,20 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import AppRoutes from "./routes";
 import Navbar from "./components/Navbar/Navbar";
+import { CssBaseline, Box } from "@mui/material";
+import styles from "./App.module.scss";
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+        <CssBaseline />
+        <Box className={styles.container}>
           <Navbar />
-          <AppRoutes />
-        </div>
+          <Box sx={{ flex: 1 }}>
+            <AppRoutes />
+          </Box>
+        </Box>
       </Router>
     </AuthProvider>
   );

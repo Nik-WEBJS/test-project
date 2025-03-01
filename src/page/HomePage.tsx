@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
 import { getInfo } from "../services/api";
+import { useAuth } from "../components/AuthContext";
 
 const HomePage = () => {
+  const { token } = useAuth();
   const [info, setInfo] = useState<string>("");
 
   useEffect(() => {
-    getInfo().then((data) => setInfo(data as string));
-  }, []);
+    if (token) {
+      getInfo().then((data) => setInfo(data as string));
+    }
+  }, [token]);
 
   return (
     <div>
       <h1>Little story about the company</h1>
-      <p>{info}</p>
+      {token ? <p>{info}</p> : ""}
     </div>
   );
 };

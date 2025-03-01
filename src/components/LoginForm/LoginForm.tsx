@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../AuthContext";
 import { TextField, Button, Paper, Typography, Stack } from "@mui/material";
+import styles from "./LoginForm.module.scss";
 
 const LoginForm = () => {
   const { login } = useAuth();
@@ -13,17 +14,7 @@ const LoginForm = () => {
   };
 
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        padding: 3,
-        width: "100%",
-        maxWidth: 400,
-        margin: "auto",
-        mt: 5,
-        textAlign: "center",
-      }}
-    >
+    <Paper elevation={3} className={styles.container}>
       <Typography variant="h5" gutterBottom>
         Login
       </Typography>

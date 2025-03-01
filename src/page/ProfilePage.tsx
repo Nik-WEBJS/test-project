@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../components/AuthContext";
 import { getAuthor, getProfile, getQuote } from "../services/api";
+import Modal from "../components/Modal/Modal";
 
 interface Profile {
   fullname: string;
@@ -25,6 +26,8 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [abortController, setAbortController] =
     useState<AbortController | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [currentStep, setCurrentStep] = useState<number>(0);
 
   useEffect(() => {
     if (token) {
@@ -38,16 +41,21 @@ const ProfilePage = () => {
 
   const handleUpdate = async () => {
     setLoading(true);
+    setIsModalOpen(true);
+    setCurrentStep(0);
+
     const controller = new AbortController();
     setAbortController(controller);
 
     try {
       if (!token) throw new Error("Token is null");
 
+      setCurrentStep(1);
       const authorRes = await getAuthor(token, controller.signal);
       if (!authorRes.success) throw new Error("Ошибка загрузки автора");
       const author = authorRes.data as Author;
 
+      setCurrentStep(2);
       const quoteRes = await getQuote(
         token,
         author.authorId,
@@ -57,6 +65,7 @@ const ProfilePage = () => {
       const quoteData = quoteRes.data as Quote;
 
       setQuote(`${author.name}: "${quoteData.quote}"`);
+      setIsModalOpen(false);
     } catch (error) {
       if (error instanceof Error && error.message === "Request aborted") {
         console.log("Запрос отменён");
@@ -72,6 +81,7 @@ const ProfilePage = () => {
   const cancelRequest = () => {
     abortController?.abort();
     setLoading(false);
+    setIsModalOpen(false);
   };
 
   return (
@@ -85,8 +95,14 @@ const ProfilePage = () => {
       <button onClick={handleUpdate} disabled={loading}>
         Update
       </button>
-      {loading && <button onClick={cancelRequest}>Cancel</button>}
       {quote && <p>{quote}</p>}
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={cancelRequest}
+        steps={["Requesting author", "Requesting quote"]}
+        currentStep={currentStep}
+      />
     </div>
   );
 };
